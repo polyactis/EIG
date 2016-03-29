@@ -7,19 +7,21 @@ ifeq ($(DOMAINNAME),broadinstitute.org)
 $(info *** Broad Institute users can execute use .openblas-0.2.8 and use GCC-4.9 to link to OpenBLAS ***)
 else
 # ----- On orchestra this will work  
-OPENBLAS=/opt/openblas
+#OPENBLAS=/opt/openblas
 $(info setting $$OPENBLAS to [${OPENBLAS}])
 endif
 endif
 
+openBlasLDFlags="-l:libopenblas.so.0"	#-lopenblas
+
 ifdef OPENBLAS
 CFLAGS  = -I../include -I$(OPENBLAS)/include -D_GNU_SOURCE
 LDFLAGS = -L$(OPENBLAS)/lib -D_GNU_SOURCE
-LDLIBS  = -Wl,-Bdynamic -lgsl -Wl,-Bstatic -lopenblas -Wl,-Bdynamic -lgfortran -pthread -lm
+LDLIBS  = -Wl,-Bdynamic -lgsl -Wl,-Bstatic $(openBlasLDFlags) -Wl,-Bdynamic -lgfortran -pthread -lm
 else
 CFLAGS  = -I../include -D_GNU_SOURCE
 LDFLAGS = -D_GNU_SOURCE
-LDLIBS  = -lgsl -lopenblas -lgfortran -pthread -lm
+LDLIBS  = -lgsl $(openBlasLDFlags) -lgfortran -pthread -lm
 endif
 
 CC = gcc
